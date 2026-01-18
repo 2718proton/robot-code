@@ -1,0 +1,6 @@
+{
+  "detection": {
+    "num_cards": 2,
+    "confidence_threshold": 0.5
+  }
+}
