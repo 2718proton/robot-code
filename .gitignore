@@ -1,0 +1,19 @@
+# Ignore robotics_arm folder (has its own git repo)
+robotics_arm/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+venv/
+
+# Generated files
+*.pyc
+latest_hand.json
+
+# SSL certs
+
+# IDE
+.vscode/
+.idea/

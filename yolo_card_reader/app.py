@@ -37,6 +37,7 @@ def card_string_to_tuple(card_str):
 config = {}
 config_lock = Lock()
 card_results = []
+latest_hand = None  # Store latest detected hand for /hand endpoint
 
 # Model path (hardcoded)
 MODEL_PATH = 'yolo11-poker-hand-detection-and-analysis-main/weights/poker_best.pt'
@@ -139,10 +140,17 @@ def config_endpoint():
         save_config(new_config)
         return jsonify({'status': 'success', 'config': config})
 
+@app.route('/hand', methods=['GET'])
+def get_hand():
+    """Return the latest detected hand."""
+    if latest_hand is None:
+        return jsonify({'status': 'no_data', 'hand': []})
+    return jsonify({'status': 'success', 'hand': latest_hand})
+
 @app.route('/upload_frame', methods=['POST'])
 def upload_frame():
     """Receive frame from phone camera"""
-    global card_results
+    global card_results, latest_hand
 
     try:
         # Get image from request
@@ -163,6 +171,13 @@ def upload_frame():
                 hand.append(result['cards'][0])  # Take first card in zone
             else:
                 hand.append(None)
+
+        # Store for /hand endpoint
+        latest_hand = hand
+
+        # Write to file for external access
+        with open('latest_hand.json', 'w') as f:
+            json.dump({'hand': hand}, f)
 
         return jsonify({
             'status': 'success',
